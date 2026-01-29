@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Tahrirlash{% else %}Yangi ro'yxat{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-clipboard-check"></i> 
+                    {% if form.instance.pk %}
+                        Ro'yxatni tahrirlash
+                    {% else %}
+                        Talabani kursga yozish
+                    {% endif %}
+                </h2>
+                <a href="{% url 'enrollments:enrollment_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Orqaga
+                </a>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post" id="enrollmentForm" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Error Messages -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Student and Course Selection -->
+                        <div class="form-section mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-users"></i> Asosiy ma'lumotlar
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.student.id_for_label }}" class="form-label">
+                                        Talaba <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.student }}
+                                    {% if form.student.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.student.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.course.id_for_label }}" class="form-label">
+                                        Kurs <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.course }}
+                                    {% if form.course.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.course.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.semester.id_for_label }}" class="form-label">
+                                        Semestr <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.semester }}
+                                    {% if form.semester.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.semester.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label>
+                                        Ro'yxatga olingan sana <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.enrolled_at }}
+                                    <small class="form-text text-muted">Format: YYYY-MM-DD</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Grade and Status -->
+                        <div class="form-section mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-chart-line"></i> Baho va holat
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.grade.id_for_label }}" class="form-label">
+                                        Baho
+                                    </label>
+                                    {{ form.grade }}
+                                    {% if form.grade.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.grade.errors }}
+                                    </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">0-100 oralig'ida</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.status.id_for_label }}" class="form-label">
+                                        Holat <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.status }}
+                                    {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.status.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Info Cards -->
+                            <div class="row mt-3">
+                                <div class="col-md-3">
+                                    <div class="card bg-success text-white">
+                                        <div class="card-body py-2 px-3">
+                                            <small>A'lo: 86-100</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-primary text-white">
+                                        <div class="card-body py-2 px-3">
+                                            <small>Yaxshi: 71-85</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-warning text-dark">
+                                        <div class="card-body py-2 px-3">
+                                            <small>Qoniqarli: 55-70</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-danger text-white">
+                                        <div class="card-body py-2 px-3">
+                                            <small>Qoniqarsiz: 0-54</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save"></i> Saqlash
+                            </button>
+                            <a href="{% url 'enrollments:enrollment_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-info-circle"></i> Yordam</h6>
+                    <ul class="mb-0 small">
+                        <li>Talabani kursga birinchi marta yozayotganda holatni "Faol" deb belgilang</li>
+                        <li>Baho kiritish majburiy emas, keyinchalik qo'shishingiz mumkin</li>
+                        <li>Kurs tugagach holatni "Tugagan" ga o'zgartiring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/form-validation.js' %}"></script>
+<script src="{% static 'js/enrollments.js' %}"></script>
+{% endblock %}

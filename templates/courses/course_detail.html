@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.name }} - Ma'lumotlar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'courses:course_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Course Info -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book-open"></i> Kurs ma'lumotlari
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">{{ course.name }}</h4>
+                    
+                    <div class="info-list">
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Kod</label>
+                            <p class="mb-0"><strong>{{ course.code }}</strong></p>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Kredit</label>
+                            <p class="mb-0">
+                                <span class="badge bg-primary">{{ course.credits }} kredit</span>
+                            </p>
+                        </div>
+
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Semestr</label>
+                            <p class="mb-0">
+                                <span class="badge bg-info">{{ course.semester }}-semestr</span>
+                            </p>
+                        </div>
+
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">O'qituvchi</label>
+                            <p class="mb-0">
+                                <i class="fas fa-chalkboard-teacher text-success"></i>
+                                {{ course.instructor|default:"Belgilanmagan" }}
+                            </p>
+                        </div>
+
+                        <div class="info-item mb-3">
+                            <label class="text-muted small">Tavsif</label>
+                            <p class="mb-0 text-muted">
+                                {{ course.description|default:"Tavsif mavjud emas" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'courses:course_update' course.id %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Tahrirlash
+                        </a>
+                        <a href="{% url 'courses:course_delete' course.id %}" class="btn btn-danger"
+                           onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                            <i class="fas fa-trash"></i> O'chirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-3"><i class="fas fa-chart-pie"></i> Statistika</h6>
+                    <div class="stat-item mb-2">
+                        <small class="text-muted">Jami talabalar</small>
+                        <h5>{{ course.enrollment_set.count }}</h5>
+                    </div>
+                    <div class="stat-item mb-2">
+                        <small class="text-muted">Faol talabalar</small>
+                        <h5>{{ active_enrollments }}</h5>
+                    </div>
+                    <div class="stat-item">
+                        <small class="text-muted">O'rtacha baho</small>
+                        <h5>{{ average_grade|floatformat:2|default:"N/A" }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users"></i> 
+                        Kursga yozilgan talabalar ({{ course.enrollment_set.count }})
+                    </h5>
+                    <a href="{% url 'enrollments:enrollment_create' %}?course={{ course.id }}" 
+                       class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Talaba qo'shish
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if course.enrollment_set.all %}
+                    <!-- Filter -->
+                    <div class="mb-3">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary active" data-filter="all">
+                                Barchasi
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-filter="active">
+                                Faol
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" data-filter="completed">
+                                Tugagan
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-filter="dropped">
+                                Tashlab ketgan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Talaba</th>
+                                    <th>Email</th>
+                                    <th>Baho</th>
+                                    <th>Holat</th>
+                                    <th>Harakatlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in course.enrollment_set.all %}
+                                <tr data-status="{{ enrollment.status }}">
+                                    <td><strong>{{ enrollment.student.student_id }}</strong></td>
+                                    <td>
+                                        <a href="{% url 'students:student_detail' enrollment.student.id %}">
+                                            {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ enrollment.student.email }}</td>
+                                    <td>
+                                        {% if enrollment.grade %}
+                                        <span class="badge 
+                                            {% if enrollment.grade >= 70 %}bg-success
+                                            {% elif enrollment.grade >= 50 %}bg-warning
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ enrollment.grade }}
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if enrollment.status == 'active' %}bg-success
+                                            {% elif enrollment.status == 'completed' %}bg-primary
+                                            {% elif enrollment.status == 'dropped' %}bg-danger
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ enrollment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'enrollments:enrollment_update' enrollment.id %}" 
+                                               class="btn btn-sm btn-outline-warning" title="Tahrirlash">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'enrollments:enrollment_delete' enrollment.id %}" 
+                                               class="btn btn-sm btn-outline-danger" title="O'chirish"
+                                               onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Hozircha talabalar yo'q</p>
+                        <a href="{% url 'enrollments:enrollment_create' %}?course={{ course.id }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Talaba qo'shish
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/courses.js' %}"></script>
+<script>
+// Filter students by status
+document.querySelectorAll('[data-filter]').forEach(button => {
+    button.addEventListener('click', function() {
+        const filter = this.dataset.filter;
+        
+        // Update active button
+        document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            if (filter === 'all' || row.dataset.status === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

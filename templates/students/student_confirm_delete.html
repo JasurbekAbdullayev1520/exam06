@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Talabani o'chirish - Tasdiqlash{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> O'chirishni tasdiqlang
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Diqqat!</strong> Bu amalni qaytarib bo'lmaydi.
+                    </div>
+
+                    <div class="student-info mb-4">
+                        <h6 class="text-muted mb-3">Quyidagi talaba o'chiriladi:</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4 text-muted">ID:</div>
+                                    <div class="col-8"><strong>{{ object.student_id }}</strong></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Ism:</div>
+                                    <div class="col-8"><strong>{{ object.first_name }} {{ object.last_name }}</strong></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Email:</div>
+                                    <div class="col-8">{{ object.email }}</div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Kurslar:</div>
+                                    <div class="col-8">
+                                        <span class="badge bg-info">{{ object.enrollments.count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Ha, o'chirish
+                            </button>
+                            <a href="{% url 'students:student_detail' object.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Yo'q, bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

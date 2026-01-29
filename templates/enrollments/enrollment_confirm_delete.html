@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ro'yxatni o'chirish - Tasdiqlash{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> O'chirishni tasdiqlang
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Diqqat!</strong> Bu amalni qaytarib bo'lmaydi.
+                    </div>
+
+                    <div class="enrollment-info mb-4">
+                        <h6 class="text-muted mb-3">Quyidagi ro'yxat o'chiriladi:</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Talaba:</div>
+                                    <div class="col-7">
+                                        <strong>{{ object.student.first_name }} {{ object.student.last_name }}</strong>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Kurs:</div>
+                                    <div class="col-7">
+                                        <strong>{{ object.course.name }}</strong>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Semestr:</div>
+                                    <div class="col-7">
+                                        <span class="badge bg-secondary">{{ object.semester }}</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Baho:</div>
+                                    <div class="col-7">
+                                        {% if object.grade %}
+                                        <span class="badge bg-primary">{{ object.grade }}</span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-muted">Holat:</div>
+                                    <div class="col-7">
+                                        <span class="badge 
+                                            {% if object.status == 'active' %}bg-success
+                                            {% elif object.status == 'completed' %}bg-primary
+                                            {% elif object.status == 'dropped' %}bg-danger
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ object.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Ha, o'chirish
+                            </button>
+                            <a href="{% url 'enrollments:enrollment_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Yo'q, bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

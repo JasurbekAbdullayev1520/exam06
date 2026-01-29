@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kursni o'chirish - Tasdiqlash{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> O'chirishni tasdiqlang
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Diqqat!</strong> Bu amalni qaytarib bo'lmaydi.
+                    </div>
+
+                    <div class="course-info mb-4">
+                        <h6 class="text-muted mb-3">Quyidagi kurs o'chiriladi:</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4 text-muted">Nom:</div>
+                                    <div class="col-8"><strong>{{ object.name }}</strong></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Kod:</div>
+                                    <div class="col-8"><strong>{{ object.code }}</strong></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Kredit:</div>
+                                    <div class="col-8">{{ object.credits }}</div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-muted">Talabalar:</div>
+                                    <div class="col-8">
+                                        <span class="badge bg-warning">{{ object.enrollment_set.count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if object.enrollment_set.count > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Bu kursda <strong>{{ object.enrollment_set.count }}</strong> ta talaba ro'yxatga olingan. 
+                        Ularning barcha ma'lumotlari ham o'chiriladi!
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Ha, o'chirish
+                            </button>
+                            <a href="{% url 'courses:course_detail' object.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Yo'q, bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

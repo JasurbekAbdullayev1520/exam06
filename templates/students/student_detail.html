@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ student.first_name }} {{ student.last_name }} - Ma'lumotlar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'students:student_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Student Info Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="student-avatar mb-3">
+                        {% if student.gender == 'M' %}
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                        {% else %}
+                        <i class="fas fa-user-circle fa-5x text-danger"></i>
+                        {% endif %}
+                    </div>
+                    <h4 class="mb-1">{{ student.first_name }} {{ student.last_name }}</h4>
+                    <p class="text-muted mb-3">ID: {{ student.student_id }}</p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'students:student_update' student.id %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Tahrirlash
+                        </a>
+                        <a href="{% url 'students:student_delete' student.id %}" class="btn btn-danger"
+                           onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                            <i class="fas fa-trash"></i> O'chirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-3"><i class="fas fa-chart-bar"></i> Statistika</h6>
+                    <div class="stat-item mb-2">
+                        <small class="text-muted">Kurslar soni</small>
+                        <h5>{{ student.enrollments.count }}</h5>
+                    </div>
+                    <div class="stat-item">
+                        <small class="text-muted">O'rtacha baho</small>
+                        <h5>{{ average_grade|default:"N/A" }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details and Enrollments -->
+        <div class="col-md-8">
+            <!-- Personal Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> Shaxsiy ma'lumotlar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Email</label>
+                            <p class="mb-0">
+                                <i class="fas fa-envelope text-primary"></i> 
+                                <a href="mailto:{{ student.email }}">{{ student.email }}</a>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Telefon</label>
+                            <p class="mb-0">
+                                <i class="fas fa-phone text-success"></i> 
+                                {{ student.phone_number|default:"-" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Tug'ilgan sana</label>
+                            <p class="mb-0">
+                                <i class="fas fa-calendar text-info"></i> 
+                                {{ student.date_of_birth|date:"d F Y" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Jins</label>
+                            <p class="mb-0">
+                                <span class="badge {% if student.gender == 'M' %}bg-primary{% else %}bg-danger{% endif %}">
+                                    {{ student.get_gender_display }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-12">
+                            <label class="text-muted small">Manzil</label>
+                            <p class="mb-0">
+                                <i class="fas fa-map-marker-alt text-danger"></i> 
+                                {{ student.address|default:"-" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrollments -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-book-reader"></i> Kurslar</h5>
+                    <a href="{% url 'enrollments:enrollment_create' %}?student={{ student.id }}" 
+                       class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Kursga yozish
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if student.enrollments.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Kurs</th>
+                                    <th>O'qituvchi</th>
+                                    <th>Semestr</th>
+                                    <th>Baho</th>
+                                    <th>Holat</th>
+                                    <th>Harakatlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in student.enrollments.all %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ enrollment.course.name }}</strong><br>
+                                        <small class="text-muted">{{ enrollment.course.code }}</small>
+                                    </td>
+                                    <td>{{ enrollment.course.instructor|default:"-" }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ enrollment.semester }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if enrollment.grade %}
+                                        <span class="badge {% if enrollment.grade >= 70 %}bg-success{% elif enrollment.grade >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ enrollment.grade }}
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if enrollment.status == 'active' %}bg-success
+                                            {% elif enrollment.status == 'completed' %}bg-primary
+                                            {% elif enrollment.status == 'dropped' %}bg-danger
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ enrollment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'enrollments:enrollment_update' enrollment.id %}" 
+                                           class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Hozircha kurslarga yozilmagan</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/students.js' %}"></script>
+{% endblock %}

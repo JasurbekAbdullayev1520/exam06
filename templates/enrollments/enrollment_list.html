@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ro'yxatga olishlar{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-clipboard-list"></i> Ro'yxatga olishlar</h2>
+        <a href="{% url 'enrollments:enrollment_create' %}" class="btn btn-info">
+            <i class="fas fa-plus"></i> Yangi ro'yxat
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small">Talaba</label>
+                        <select name="student" class="form-select">
+                            <option value="">Barcha talabalar</option>
+                            {% for student in all_students %}
+                            <option value="{{ student.id }}" {% if request.GET.student == student.id|stringformat:"s" %}selected{% endif %}>
+                                {{ student.first_name }} {{ student.last_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small">Kurs</label>
+                        <select name="course" class="form-select">
+                            <option value="">Barcha kurslar</option>
+                            {% for course in all_courses %}
+                            <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>
+                                {{ course.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small">Holat</label>
+                        <select name="status" class="form-select">
+                            <option value="">Barcha holatlar</option>
+                            <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Faol</option>
+                            <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Tugagan</option>
+                            <option value="dropped" {% if request.GET.status == 'dropped' %}selected{% endif %}>Tashlab ketgan</option>
+                            <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small">Semestr</label>
+                        <select name="semester" class="form-select">
+                            <option value="">Barcha</option>
+                            {% for i in "12345678" %}
+                            <option value="{{ i }}" {% if request.GET.semester == i %}selected{% endif %}>{{ i }}-semestr</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Jami</h6>
+                            <h3 class="mb-0">{{ total_enrollments }}</h3>
+                        </div>
+                        <i class="fas fa-clipboard-list fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Faol</h6>
+                            <h3 class="mb-0">{{ active_count }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Tugagan</h6>
+                            <h3 class="mb-0">{{ completed_count }}</h3>
+                        </div>
+                        <i class="fas fa-graduation-cap fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Kutilmoqda</h6>
+                            <h3 class="mb-0">{{ pending_count }}</h3>
+                        </div>
+                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrollments Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {% if enrollments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Talaba</th>
+                            <th>Kurs</th>
+                            <th>Semestr</th>
+                            <th>Baho</th>
+                            <th>Holat</th>
+                            <th>Ro'yxatga olingan</th>
+                            <th>Harakatlar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td><strong>#{{ enrollment.id }}</strong></td>
+                            <td>
+                                <a href="{% url 'students:student_detail' enrollment.student.id %}">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            {% if enrollment.student.gender == 'M' %}
+                                            <i class="fas fa-user text-primary"></i>
+                                            {% else %}
+                                            <i class="fas fa-user text-danger"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</div>
+                                            <small class="text-muted">{{ enrollment.student.student_id }}</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'courses:course_detail' enrollment.course.id %}">
+                                    <div>
+                                        <div class="fw-bold">{{ enrollment.course.name }}</div>
+                                        <small class="text-muted">{{ enrollment.course.code }}</small>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ enrollment.semester }}</span>
+                            </td>
+                            <td>
+                                {% if enrollment.grade %}
+                                <span class="badge 
+                                    {% if enrollment.grade >= 70 %}bg-success
+                                    {% elif enrollment.grade >= 50 %}bg-warning text-dark
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ enrollment.grade }}
+                                </span>
+                                {% else %}
+                                <span class="badge bg-light text-dark">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if enrollment.status == 'active' %}bg-success
+                                    {% elif enrollment.status == 'completed' %}bg-primary
+                                    {% elif enrollment.status == 'dropped' %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ enrollment.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ enrollment.enrollment_date|date:"d.m.Y" }}
+                                </small>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'enrollments:enrollment_update' enrollment.id %}" 
+                                       class="btn btn-sm btn-outline-warning" title="Tahrirlash">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'enrollments:enrollment_delete' enrollment.id %}" 
+                                       class="btn btn-sm btn-outline-danger" title="O'chirish"
+                                       onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">Ro'yxatlar topilmadi</h5>
+                <p class="text-muted">Yangi ro'yxat qo'shish uchun yuqoridagi tugmani bosing.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/enrollments.js' %}"></script>
+{% endblock %}

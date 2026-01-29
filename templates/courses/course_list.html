@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kurslar ro'yxati{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-book"></i> Kurslar ro'yxati</h2>
+        <a href="{% url 'courses:course_create' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Yangi kurs
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Kurs nomi yoki kod bo'yicha qidirish..."
+                                   value="{{ request.GET.search }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="semester" class="form-select">
+                            <option value="">Barcha semestrlar</option>
+                            <option value="1" {% if request.GET.semester == '1' %}selected{% endif %}>1-semestr</option>
+                            <option value="2" {% if request.GET.semester == '2' %}selected{% endif %}>2-semestr</option>
+                            <option value="3" {% if request.GET.semester == '3' %}selected{% endif %}>3-semestr</option>
+                            <option value="4" {% if request.GET.semester == '4' %}selected{% endif %}>4-semestr</option>
+                            <option value="5" {% if request.GET.semester == '5' %}selected{% endif %}>5-semestr</option>
+                            <option value="6" {% if request.GET.semester == '6' %}selected{% endif %}>6-semestr</option>
+                            <option value="7" {% if request.GET.semester == '7' %}selected{% endif %}>7-semestr</option>
+                            <option value="8" {% if request.GET.semester == '8' %}selected{% endif %}>8-semestr</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="ordering" class="form-select">
+                            <option value="">Saralash</option>
+                            <option value="name" {% if request.GET.ordering == 'name' %}selected{% endif %}>Nom (A-Z)</option>
+                            <option value="-name" {% if request.GET.ordering == '-name' %}selected{% endif %}>Nom (Z-A)</option>
+                            <option value="credits" {% if request.GET.ordering == 'credits' %}selected{% endif %}>Kredit</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    {% if courses %}
+    <div class="row g-4">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card course-card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-0">{{ course.name }}</h5>
+                            <small>{{ course.code }}</small>
+                        </div>
+                        <span class="badge bg-light text-dark">
+                            {{ course.credits }} kredit
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <p class="text-muted small mb-2">
+                            {{ course.description|truncatewords:20|default:"Tavsif mavjud emas" }}
+                        </p>
+                    </div>
+
+                    <div class="course-info">
+                        <div class="info-item mb-2">
+                            <i class="fas fa-calendar-alt text-success"></i>
+                            <small class="text-muted">Semestr:</small>
+                            <span class="badge bg-info">{{ course.semester }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock text-warning"></i>
+                            <small class="text-muted">Yil:</small>
+                            <span class="badge bg-secondary">{{ course.year }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'courses:course_detail' course.id %}" 
+                           class="btn btn-sm btn-outline-info flex-fill">
+                            <i class="fas fa-eye"></i> Ko'rish
+                        </a>
+                        <a href="{% url 'courses:course_update' course.id %}" 
+                           class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'courses:course_delete' course.id %}" 
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-book fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">Kurslar topilmadi</h5>
+        <p class="text-muted">Yangi kurs qo'shish uchun yuqoridagi tugmani bosing.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/courses.js' %}"></script>
+{% endblock %}
