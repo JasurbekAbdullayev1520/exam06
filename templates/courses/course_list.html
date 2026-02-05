@@ -44,7 +44,7 @@
                             <option value="">Saralash</option>
                             <option value="name" {% if request.GET.ordering == 'name' %}selected{% endif %}>Nom (A-Z)</option>
                             <option value="-name" {% if request.GET.ordering == '-name' %}selected{% endif %}>Nom (Z-A)</option>
-                            <option value="credits" {% if request.GET.ordering == 'credits' %}selected{% endif %}>Kredit</option>
+                            <option value="oylik_tolov" {% if request.GET.ordering == 'oylik_tolov' %}selected{% endif %}>Oylik to'lov</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -70,7 +70,7 @@
                             <small>{{ course.code }}</small>
                         </div>
                         <span class="badge bg-light text-dark">
-                            {{ course.credits }} kredit
+                            {{ course.oylik_tolov }} so'm oylik to'lov
                         </span>
                     </div>
                 </div>
@@ -84,8 +84,8 @@
                     <div class="course-info">
                         <div class="info-item mb-2">
                             <i class="fas fa-calendar-alt text-success"></i>
-                            <small class="text-muted">Semestr:</small>
-                            <span class="badge bg-info">{{ course.semester }}</span>
+                            <small class="text-muted">Kurs davomiligi:</small>
+                            <span class="badge bg-info">{{ course.kurs_davomiligi }}</span>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-clock text-warning"></i>

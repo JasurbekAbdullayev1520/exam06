@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 // Course Filters
 function initCourseFilters() {
-    $('select[name="semester"], select[name="ordering"]').on('change', function() {
+    $('select[name="kurs_davomiligi"], select[name="ordering"]').on('change', function() {
         $(this).closest('form').submit();
     });
     
@@ -129,15 +129,15 @@ function exportCourses() {
             code,
             credits,
             instructor,
-            semester,
+            kurs_davomiligi,
             students
         });
     });
     
     // Convert to CSV
-    let csv = 'Nom,Kod,Kredit,O\'qituvchi,Semestr,Talabalar\n';
+    let csv = 'Nom,Kod,Kredit,O\'qituvchi,Kurs davomiligi,Talabalar\n';
     courses.forEach(course => {
-        csv += `"${course.name}","${course.code}","${course.credits}","${course.instructor}","${course.semester}","${course.students}"\n`;
+        csv += `"${course.name}","${course.code}","${course.credits}","${course.instructor}","${course.kurs_davomiligi}","${course.students}"\n`;
     });
     
     downloadCSV(csv, 'kurslar.csv');
@@ -191,7 +191,7 @@ function showAddStudentModal(courseId) {
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Semestr</label>
-                                <input type="number" class="form-control" name="semester" min="1" max="8" required>
+                                <input type="number" class="form-control" name="kurs_davomiligi" min="1" max="8" required>
                             </div>
                         </form>
                     </div>
@@ -237,7 +237,7 @@ function loadAvailableStudents(courseId) {
 function submitAddStudent(courseId) {
     const form = $('#addStudentForm');
     const studentId = form.find('[name="student_id"]').val();
-    const semester = form.find('[name="semester"]').val();
+    const semester = form.find('[name="kurs_davomiligi"]').val();
     
     if (!studentId || !semester) {
         showToast('Barcha maydonlarni to\'ldiring', 'warning');
@@ -252,7 +252,7 @@ function submitAddStudent(courseId) {
         data: {
             student: studentId,
             course: courseId,
-            semester: semester,
+            kurs_davomiligi: kurs_davomiligi,
             status: 'active',
             csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
         },

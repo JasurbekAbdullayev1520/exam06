@@ -15,9 +15,9 @@ def course_list(request):
             code__icontains=search
         )
     
-    semester = request.GET.get('semester', '')
-    if semester:
-        courses = courses.filter(semester=semester)
+    kurs_davomiligi = request.GET.get('kurs_davomiligi', '')
+    if kurs_davomiligi:
+        courses = courses.filter(kurs_davomiligi=kurs_davomiligi)
     
     ordering = request.GET.get('ordering', 'name')
     if ordering:
@@ -26,7 +26,7 @@ def course_list(request):
     context = {
         'courses': courses,
         'search': search,
-        'semester': semester,
+        'kurs_davomiligi': kurs_davomiligi,
         'ordering': ordering
     }
     return render(request, 'courses/course_list.html', context)

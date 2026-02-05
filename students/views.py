@@ -36,6 +36,7 @@ def student_detail(request, id):
     student = get_object_or_404(Student, id=id)
     return render(request, 'students/student_detail.html', {
         'student': student
+        
     })
     
 def student_update(request, id):

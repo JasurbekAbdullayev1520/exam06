@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 // Enrollment Filters
 function initEnrollmentFilters() {
-    $('select[name="student"], select[name="course"], select[name="status"], select[name="semester"]').on('change', function() {
+    $('select[name="student"], select[name="course"], select[name="status"], select[name="kurs_davomiligi"]').on('change', function() {
         $(this).closest('form').submit();
     });
 }
@@ -201,20 +201,20 @@ function exportEnrollments() {
         const id = $(this).find('td:eq(0)').text();
         const student = $(this).find('td:eq(1) .fw-bold').text();
         const course = $(this).find('td:eq(2) .fw-bold').text();
-        const semester = $(this).find('td:eq(3) .badge').text();
+        const kurs_davomiligi = $(this).find('td:eq(3) .badge').text();
         const grade = $(this).find('td:eq(4) .badge').text();
         const status = $(this).find('td:eq(5) .badge').text();
         const date = $(this).find('td:eq(6)').text();
         
         enrollments.push({
-            id, student, course, semester, grade, status, date
+            id, student, course, kurs_davomiligi, grade, status, date
         });
     });
     
     // Convert to CSV
-    let csv = 'ID,Talaba,Kurs,Semestr,Baho,Holat,Sana\n';
+    let csv = 'ID,Talaba,Kurs,Kurs davomiligi,Baho,Holat,Sana\n';
     enrollments.forEach(enrollment => {
-        csv += `"${enrollment.id}","${enrollment.student}","${enrollment.course}","${enrollment.semester}","${enrollment.grade}","${enrollment.status}","${enrollment.date}"\n`;
+        csv += `"${enrollment.id}","${enrollment.student}","${enrollment.course}","${enrollment.kurs_davomiligi}","${enrollment.grade}","${enrollment.status}","${enrollment.date}"\n`;
     });
     
     downloadCSV(csv, 'royxatlar.csv');
@@ -305,7 +305,7 @@ function generateEnrollmentReport() {
         student: $('select[name="student"]').val(),
         course: $('select[name="course"]').val(),
         status: $('select[name="status"]').val(),
-        semester: $('select[name="semester"]').val()
+        kurs_davomiligi: $('select[name="kurs_davomiligi"]').val()
     };
     
     $.ajax({

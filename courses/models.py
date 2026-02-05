@@ -5,13 +5,13 @@ class Course(models.Model):
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20, unique=True, verbose_name='Kurs kodi')
     description = models.TextField(blank=True, null=True)
-    credits = models.BigIntegerField(
+    oylik_tolov = models.BigIntegerField(
         validators=[
             MinValueValidator(1),
-            MaxValueValidator(10),
+            MaxValueValidator(10000000),
                     ]
     )
-    semester = models.BigIntegerField(
+    kurs_davomiligi = models.BigIntegerField(
         validators=[
             MinValueValidator(0),
             MaxValueValidator(12),

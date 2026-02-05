@@ -54,11 +54,11 @@
                     </div>
 
                     <div class="col-md-2">
-                        <label class="form-label small">Semestr</label>
-                        <select name="semester" class="form-select">
+                        <label class="form-label small">Kurs davomiligi</label>
+                        <select name="kurs_davomiligi" class="form-select">
                             <option value="">Barcha</option>
                             {% for i in "12345678" %}
-                            <option value="{{ i }}" {% if request.GET.semester == i %}selected{% endif %}>{{ i }}-semestr</option>
+                            <option value="{{ i }}" {% if request.GET.kurs_davomiligi == i %}selected{% endif %}>{{ i }}-kurs_davomiligi</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -178,7 +178,7 @@
                                 </a>
                             </td>
                             <td>
-                                <span class="badge bg-secondary">{{ enrollment.semester }}</span>
+                                <span class="badge bg-secondary">{{ enrollment.kurs_davomiligi }}</span>
                             </td>
                             <td>
                                 {% if enrollment.grade %}

@@ -76,24 +76,24 @@
 
                             <div class="col-md-4 mb-3">
                                 <label for="{{ form.credits.id_for_label }}" class="form-label">
-                                    Kredit <span class="text-danger">*</span>
+                                    Oylik to'lo'v <span class="text-danger">*</span>
                                 </label>
-                                {{ form.credits }}
-                                {% if form.credits.errors %}
+                                {{ form.oylik_tolov }}
+                                {% if form.oylik_tolov.errors %}
                                 <div class="invalid-feedback d-block">
-                                    {{ form.credits.errors }}
+                                    {{ form.oylik_tolov.errors }}
                                 </div>
                                 {% endif %}
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label for="{{ form.semester.id_for_label }}" class="form-label">
-                                    Semestr <span class="text-danger">*</span>
+                                <label for="{{ form.kurs_davomiligi.id_for_label }}" class="form-label">
+                                    Kurs davomiligi <span class="text-danger">*</span>
                                 </label>
-                                {{ form.semester }}
-                                {% if form.semester.errors %}
+                                {{ form.kurs_davomiligi }}
+                                {% if form.kurs_davomiligi.errors %}
                                 <div class="invalid-feedback d-block">
-                                    {{ form.semester.errors }}
+                                    {{ form.kurs_davomiligi.errors }}
                                 </div>
                                 {% endif %}
                             </div>
