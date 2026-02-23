@@ -12,6 +12,31 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config, Csv
+from rich.logging import RichHandler
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "rich": {
+            "class": "rich.logging.RichHandler",
+            "level": "DEBUG",
+            "rich_tracebacks": True,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["rich"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["rich"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
